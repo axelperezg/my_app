@@ -22,7 +22,7 @@
 
             <flux:separator variant="subtle" />
 
-            <flux:heading size="lg">{{ __('Requisitos') }}</flux:heading>
+            <flux:heading size="lg">{{ __('Envío de Documentos') }}</flux:heading>
 
             <div class="grid gap-6">
                 <x-solicitudes.file-field name="oficioEntrada" :label="__('Oficio de Entrada (PDF)')" accept="application/pdf" />
@@ -30,9 +30,41 @@
                 <x-solicitudes.file-field name="formatoResultadosExcel" :label="__('Formato de Resultados (Excel)')" accept=".xlsx,.xls" />
                 <x-solicitudes.file-field name="carpetaResultados" :label="__('Carpeta de Resultados (PDF)')" accept="application/pdf" />
                 <x-solicitudes.file-field name="instrumentoEvaluacion" :label="__('Instrumento de Evaluación (PDF)')" accept="application/pdf" />
-                <x-solicitudes.file-field name="videos" :label="__('Video (opcional)')" accept="video/*" multiple />
-                <x-solicitudes.file-field name="audios" :label="__('Audio (opcional)')" accept="audio/*" multiple />
-                <x-solicitudes.file-field name="imagenes" :label="__('Imágenes (opcional)')" accept="image/*" multiple />
+            </div>
+
+            <flux:separator variant="subtle" />
+
+            <flux:heading size="lg">{{ __('Muestra de Materiales') }}</flux:heading>
+            <flux:subheading>{{ __('Opcional. Puedes agregar más de un archivo de cada tipo.') }}</flux:subheading>
+
+            <div class="grid gap-6">
+                <x-solicitudes.file-repeater
+                    name="videos"
+                    :label="__('Video')"
+                    :addLabel="__('Agregar video')"
+                    accept="video/*"
+                    :items="$videos"
+                    addMethod="agregarVideo"
+                    removeMethod="quitarVideo"
+                />
+                <x-solicitudes.file-repeater
+                    name="audios"
+                    :label="__('Audio')"
+                    :addLabel="__('Agregar audio')"
+                    accept="audio/*"
+                    :items="$audios"
+                    addMethod="agregarAudio"
+                    removeMethod="quitarAudio"
+                />
+                <x-solicitudes.file-repeater
+                    name="imagenes"
+                    :label="__('Imágenes')"
+                    :addLabel="__('Agregar imagen')"
+                    accept="image/*"
+                    :items="$imagenes"
+                    addMethod="agregarImagen"
+                    removeMethod="quitarImagen"
+                />
             </div>
 
             <div class="flex justify-end gap-2">

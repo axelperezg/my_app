@@ -37,13 +37,13 @@ class Create extends Component
     public mixed $instrumentoEvaluacion = null;
 
     /** @var array<int, mixed> */
-    public array $videos = [];
+    public array $videos = [null];
 
     /** @var array<int, mixed> */
-    public array $audios = [];
+    public array $audios = [null];
 
     /** @var array<int, mixed> */
-    public array $imagenes = [];
+    public array $imagenes = [null];
 
     /**
      * Mount the component.
@@ -53,6 +53,9 @@ class Create extends Component
         Gate::authorize('create', Solicitud::class);
 
         $this->correo_electronico = Auth::user()->email;
+
+        $ejercicioActual = EjercicioFiscal::active()->where('anio', now()->year)->first();
+        $this->ejercicio_fiscal_id = $ejercicioActual ? (string) $ejercicioActual->id : '';
     }
 
     /**
@@ -81,11 +84,11 @@ class Create extends Component
             'carpetaResultados' => $this->fileRules(TipoArchivoSolicitud::CarpetaResultados),
             'instrumentoEvaluacion' => $this->fileRules(TipoArchivoSolicitud::InstrumentoEvaluacion),
             'videos' => ['array'],
-            'videos.*' => $this->fileRules(TipoArchivoSolicitud::Video),
+            'videos.*' => $this->optionalFileRules(TipoArchivoSolicitud::Video),
             'audios' => ['array'],
-            'audios.*' => $this->fileRules(TipoArchivoSolicitud::Audio),
+            'audios.*' => $this->optionalFileRules(TipoArchivoSolicitud::Audio),
             'imagenes' => ['array'],
-            'imagenes.*' => $this->fileRules(TipoArchivoSolicitud::Imagenes),
+            'imagenes.*' => $this->optionalFileRules(TipoArchivoSolicitud::Imagenes),
         ];
     }
 
@@ -96,6 +99,21 @@ class Create extends Component
     {
         return [
             'required',
+            'file',
+            'mimes:'.implode(',', $tipo->mimes()),
+            'max:'.$tipo->maxKilobytes(),
+        ];
+    }
+
+    /**
+     * Same as fileRules(), but for repeatable slots that may be left empty.
+     *
+     * @return array<int, string>
+     */
+    private function optionalFileRules(TipoArchivoSolicitud $tipo): array
+    {
+        return [
+            'nullable',
             'file',
             'mimes:'.implode(',', $tipo->mimes()),
             'max:'.$tipo->maxKilobytes(),
@@ -131,15 +149,85 @@ class Create extends Component
                 TipoArchivoSolicitud::FormatoResultadosExcel->value => $this->formatoResultadosExcel,
                 TipoArchivoSolicitud::CarpetaResultados->value => $this->carpetaResultados,
                 TipoArchivoSolicitud::InstrumentoEvaluacion->value => $this->instrumentoEvaluacion,
-                TipoArchivoSolicitud::Video->value => $this->videos,
-                TipoArchivoSolicitud::Audio->value => $this->audios,
-                TipoArchivoSolicitud::Imagenes->value => $this->imagenes,
+                TipoArchivoSolicitud::Video->value => array_values(array_filter($this->videos)),
+                TipoArchivoSolicitud::Audio->value => array_values(array_filter($this->audios)),
+                TipoArchivoSolicitud::Imagenes->value => array_values(array_filter($this->imagenes)),
             ],
         );
 
         Flux::toast(variant: 'success', text: __('Solicitud enviada. Te enviamos el acuse de recibo por correo.'));
 
         $this->redirectRoute('solicitudes.index', navigate: true);
+    }
+
+    /**
+     * Add another empty slot to a repeatable file property.
+     */
+    private function agregarArchivo(string $propiedad): void
+    {
+        $this->{$propiedad}[] = null;
+    }
+
+    /**
+     * Remove a slot from a repeatable file property, keeping at least one.
+     */
+    private function quitarArchivo(string $propiedad, int $index): void
+    {
+        unset($this->{$propiedad}[$index]);
+
+        $this->{$propiedad} = array_values($this->{$propiedad});
+
+        if ($this->{$propiedad} === []) {
+            $this->{$propiedad} = [null];
+        }
+    }
+
+    /**
+     * Add another empty video slot.
+     */
+    public function agregarVideo(): void
+    {
+        $this->agregarArchivo('videos');
+    }
+
+    /**
+     * Remove a video slot.
+     */
+    public function quitarVideo(int $index): void
+    {
+        $this->quitarArchivo('videos', $index);
+    }
+
+    /**
+     * Add another empty audio slot.
+     */
+    public function agregarAudio(): void
+    {
+        $this->agregarArchivo('audios');
+    }
+
+    /**
+     * Remove an audio slot.
+     */
+    public function quitarAudio(int $index): void
+    {
+        $this->quitarArchivo('audios', $index);
+    }
+
+    /**
+     * Add another empty imagen slot.
+     */
+    public function agregarImagen(): void
+    {
+        $this->agregarArchivo('imagenes');
+    }
+
+    /**
+     * Remove an imagen slot.
+     */
+    public function quitarImagen(int $index): void
+    {
+        $this->quitarArchivo('imagenes', $index);
     }
 
     /**
