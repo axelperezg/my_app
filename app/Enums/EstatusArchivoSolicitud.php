@@ -14,7 +14,7 @@ enum EstatusArchivoSolicitud: string
     public function label(): string
     {
         return match ($this) {
-            self::Vacio => __('Vacío'),
+            self::Vacio => __('Sin Evaluar'),
             self::Incompleto => __('Incompleto'),
             self::Completo => __('Completo'),
         };
