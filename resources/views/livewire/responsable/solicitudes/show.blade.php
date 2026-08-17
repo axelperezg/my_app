@@ -33,20 +33,22 @@
     @if ($solicitud->respuesta)
         <flux:separator variant="subtle" class="my-6" />
 
-        <flux:heading size="lg">{{ __('Respuesta emitida') }}</flux:heading>
-        <flux:text class="mt-2">
-            <flux:link :href="route('solicitudes.respuesta.download', $solicitud)">
-                {{ __('Descargar documento firmado con las Recomendaciones') }}
-            </flux:link>
-        </flux:text>
-
-        @if ($solicitud->respuesta->atencion)
-            <flux:text class="mt-2">
-                <flux:link :href="route('solicitudes.atencion.download', $solicitud)">
-                    {{ __('Descargar documento del solicitante con la atención a las recomendaciones') }}
+        <flux:card class="space-y-2">
+            <flux:heading size="lg">{{ __('Respuesta emitida') }}</flux:heading>
+            <flux:text>
+                <flux:link :href="route('solicitudes.respuesta.download', $solicitud)">
+                    {{ __('Descargar documento firmado con las Recomendaciones') }}
                 </flux:link>
             </flux:text>
-        @endif
+
+            @if ($solicitud->respuesta->atencion)
+                <flux:text>
+                    <flux:link :href="route('solicitudes.atencion.download', $solicitud)">
+                        {{ __('Descargar documento del solicitante con la atención a las recomendaciones') }}
+                    </flux:link>
+                </flux:text>
+            @endif
+        </flux:card>
 
         <ol class="mt-4 list-decimal space-y-4 ps-5">
             @foreach ($solicitud->respuesta->recomendaciones as $recomendacion)
