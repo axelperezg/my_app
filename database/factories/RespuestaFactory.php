@@ -22,7 +22,7 @@ class RespuestaFactory extends Factory
         return [
             'solicitud_id' => Solicitud::factory(),
             'responsable_id' => User::factory()->responsable(),
-            'disco' => 'local',
+            'disco' => 's3',
             'ruta' => 'respuestas/'.fake()->uuid().'.pdf',
             'nombre_original' => 'respuesta.pdf',
             'fecha_respuesta' => now(),

@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 
 test('a solicitante can register how they will attend every recomendación', function () {
-    Storage::fake('local');
+    Storage::fake('s3');
     Mail::fake();
 
     $solicitante = User::factory()->solicitante()->create();
@@ -44,7 +44,7 @@ test('a solicitante can register how they will attend every recomendación', fun
         ->and($recomendacion1->fresh()->atencion_descripcion)->toBe('Corregiremos el formato en 5 días hábiles.')
         ->and($recomendacion2->fresh()->estatus)->toBe(RecomendacionEstatus::Pendiente);
 
-    Storage::disk('local')->assertExists($respuesta->atencion->ruta);
+    Storage::disk('s3')->assertExists($respuesta->atencion->ruta);
 
     Mail::assertQueued(AtencionRegistrada::class, fn (AtencionRegistrada $mail) => $mail->solicitud->is($solicitud));
 });
@@ -68,7 +68,7 @@ test('atención requires the pdf and a description for every pending recomendaci
 });
 
 test('an already atendida recomendación cannot be edited again', function () {
-    Storage::fake('local');
+    Storage::fake('s3');
     Mail::fake();
 
     $solicitante = User::factory()->solicitante()->create();

@@ -20,7 +20,7 @@ class AtencionFactory extends Factory
     {
         return [
             'respuesta_id' => Respuesta::factory(),
-            'disco' => 'local',
+            'disco' => 's3',
             'ruta' => 'atenciones/'.fake()->uuid().'.pdf',
             'nombre_original' => 'atencion.pdf',
             'fecha_atencion' => now(),

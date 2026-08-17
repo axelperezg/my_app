@@ -22,7 +22,7 @@ class SolicitudArchivoFactory extends Factory
         return [
             'solicitud_id' => Solicitud::factory(),
             'tipo' => TipoArchivoSolicitud::OficioEntrada,
-            'disco' => 'local',
+            'disco' => 's3',
             'ruta' => 'solicitudes/'.fake()->uuid().'.pdf',
             'nombre_original' => fake()->word().'.pdf',
             'mime' => 'application/pdf',

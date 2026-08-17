@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 
 test('a responsable can submit a respuesta with recomendaciones for their assigned solicitud', function () {
-    Storage::fake('local');
+    Storage::fake('s3');
     Mail::fake();
 
     $responsable = User::factory()->responsable()->create();
@@ -35,7 +35,7 @@ test('a responsable can submit a respuesta with recomendaciones for their assign
         ->and($solicitud->respuesta->recomendaciones)->toHaveCount(2)
         ->and($solicitud->respuesta->recomendaciones->pluck('numero')->all())->toBe([1, 2]);
 
-    Storage::disk('local')->assertExists($solicitud->respuesta->ruta);
+    Storage::disk('s3')->assertExists($solicitud->respuesta->ruta);
 
     Mail::assertQueued(RespuestaEmitida::class, fn (RespuestaEmitida $mail) => $mail->solicitud->is($solicitud));
 });
