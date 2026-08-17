@@ -17,11 +17,11 @@ enum SolicitudEstatus: string
     public function label(): string
     {
         return match ($this) {
-            self::Recibida => __('Recibida'),
+            self::Recibida => __('Enviado para Evaluación'),
             self::Asignada => __('Asignada'),
             self::EnRevision => __('En revisión'),
-            self::Respondida => __('Respondida'),
-            self::EnAtencion => __('En atención'),
+            self::Respondida => __('Recomendaciones DGNC'),
+            self::EnAtencion => __('Con atención a Recomendaciones'),
             self::Cerrada => __('Cerrada'),
         };
     }
