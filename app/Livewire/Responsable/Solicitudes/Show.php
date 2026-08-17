@@ -9,10 +9,13 @@ use App\Enums\SolicitudEstatus;
 use App\Mail\SolicitudCerrada;
 use App\Models\Recomendacion;
 use App\Models\Solicitud;
+use App\Models\SolicitudArchivo;
 use Flux\Flux;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Mail;
+use Livewire\Attributes\Computed;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -79,6 +82,30 @@ class Show extends Component
 
         $archivo->estatus = filled($value) ? EstatusArchivoSolicitud::from($value) : EstatusArchivoSolicitud::Vacio;
         $archivo->save();
+    }
+
+    /**
+     * The 5 required requisitos, in a fixed order (Oficio de Entrada, Formato de
+     * Resultados PDF, Formato de Resultados Excel, Carpeta de Resultados,
+     * Instrumento de Evaluación).
+     *
+     * @return Collection<int, SolicitudArchivo>
+     */
+    #[Computed]
+    public function documentosRequeridos(): Collection
+    {
+        return $this->solicitud->archivos->reject(fn (SolicitudArchivo $archivo) => $archivo->tipo->multiple());
+    }
+
+    /**
+     * The Video/Audio/Imágenes files the solicitante attached as muestra de materiales.
+     *
+     * @return Collection<int, SolicitudArchivo>
+     */
+    #[Computed]
+    public function muestraMateriales(): Collection
+    {
+        return $this->solicitud->archivos->filter(fn (SolicitudArchivo $archivo) => $archivo->tipo->multiple());
     }
 
     /**

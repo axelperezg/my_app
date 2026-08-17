@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\SolicitudEstatus;
+use App\Enums\TipoArchivoSolicitud;
 use App\Policies\SolicitudPolicy;
 use Carbon\CarbonImmutable;
 use Database\Factories\SolicitudFactory;
@@ -101,7 +102,25 @@ class Solicitud extends Model
      */
     public function archivos(): HasMany
     {
-        return $this->hasMany(SolicitudArchivo::class);
+        // Explicit order: without it, Postgres can return rows in a different
+        // order after an UPDATE (MVCC relocates the row physically), which made
+        // the "Documentos recibidos" table visibly reshuffle on every estatus
+        // change. Ordered by TipoArchivoSolicitud's declaration order (Oficio de
+        // Entrada, Formato de Resultados PDF/Excel, Carpeta de Resultados,
+        // Instrumento de Evaluación, Video, Audio, Imágenes) regardless of
+        // upload order, then by id for files that share a tipo.
+        $bindings = [];
+        $cases = [];
+
+        foreach (TipoArchivoSolicitud::cases() as $posicion => $tipo) {
+            $cases[] = 'WHEN ? THEN ?';
+            $bindings[] = $tipo->value;
+            $bindings[] = $posicion;
+        }
+
+        return $this->hasMany(SolicitudArchivo::class)
+            ->orderByRaw('CASE tipo '.implode(' ', $cases).' ELSE 99 END', $bindings)
+            ->orderBy('id');
     }
 
     /**
