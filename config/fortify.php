@@ -161,8 +161,8 @@ return [
     */
 
     'features' => [
-        Features::registration(),
-        Features::resetPasswords(),
+        // Features::registration(), // Alta de cuentas es solo por invitación (ver App\Actions\Users\CreateUserAccount).
+        // Features::resetPasswords(), // El Admin controla las contraseñas directamente; no hay autoservicio de recuperación.
         Features::emailVerification(),
         Features::twoFactorAuthentication([
             'confirm' => true,

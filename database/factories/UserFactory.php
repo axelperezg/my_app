@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Enums\UserRole;
+use App\Models\Institucion;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
@@ -30,6 +32,10 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
+            'role' => UserRole::Solicitante,
+            'numero_celular' => fake()->numerify('##########'),
+            'direccion' => fake()->address(),
+            'telefono_oficina' => fake()->numerify('##########'),
             'two_factor_secret' => null,
             'two_factor_recovery_codes' => null,
             'two_factor_confirmed_at' => null,
@@ -43,6 +49,37 @@ class UserFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
+        ]);
+    }
+
+    /**
+     * Indicate that the user is a solicitante.
+     */
+    public function solicitante(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => UserRole::Solicitante,
+            'institucion_id' => Institucion::factory(),
+        ]);
+    }
+
+    /**
+     * Indicate that the user is a responsable.
+     */
+    public function responsable(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => UserRole::Responsable,
+        ]);
+    }
+
+    /**
+     * Indicate that the user is an administrator.
+     */
+    public function admin(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => UserRole::Admin,
         ]);
     }
 

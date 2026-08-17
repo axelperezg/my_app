@@ -15,7 +15,53 @@
                     <flux:sidebar.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
                         {{ __('Dashboard') }}
                     </flux:sidebar.item>
+
+                    @if (auth()->user()->isSolicitante())
+                        <flux:sidebar.item icon="document-plus" :href="route('solicitudes.index')" :current="request()->routeIs('solicitudes.*')" wire:navigate>
+                            {{ __('Mis solicitudes') }}
+                        </flux:sidebar.item>
+                    @endif
+
+                    @if (auth()->user()->isResponsable())
+                        <flux:sidebar.item icon="inbox-stack" :href="route('responsable.solicitudes.index')" :current="request()->routeIs('responsable.*')" wire:navigate>
+                            {{ __('Solicitudes asignadas') }}
+                        </flux:sidebar.item>
+                    @endif
                 </flux:sidebar.group>
+
+                @if (auth()->user()->isAdmin())
+                    <flux:sidebar.group :heading="__('Administración')" class="grid">
+                        <flux:sidebar.item icon="clipboard-document-list" :href="route('admin.solicitudes')" :current="request()->routeIs('admin.solicitudes')" wire:navigate>
+                            {{ __('Solicitudes') }}
+                        </flux:sidebar.item>
+
+                        <flux:sidebar.item icon="user-plus" :href="route('admin.usuarios')" :current="request()->routeIs('admin.usuarios')" wire:navigate>
+                            {{ __('Usuarios') }}
+                        </flux:sidebar.item>
+
+                        <flux:sidebar.item icon="building-office-2" :href="route('admin.instituciones')" :current="request()->routeIs('admin.instituciones')" wire:navigate>
+                            {{ __('Instituciones') }}
+                        </flux:sidebar.item>
+
+                        <flux:sidebar.item icon="calendar-days" :href="route('admin.ejercicios-fiscales')" :current="request()->routeIs('admin.ejercicios-fiscales')" wire:navigate>
+                            {{ __('Ejercicios fiscales') }}
+                        </flux:sidebar.item>
+
+                        <flux:sidebar.item icon="photo" :href="route('admin.logos')" :current="request()->routeIs('admin.logos')" wire:navigate>
+                            {{ __('Logos') }}
+                        </flux:sidebar.item>
+                    </flux:sidebar.group>
+
+                    <flux:sidebar.group :heading="__('Reportes')" class="grid">
+                        <flux:sidebar.item icon="chart-bar" :href="route('admin.reportes.solicitudes-por-mes')" :current="request()->routeIs('admin.reportes.solicitudes-por-mes')" wire:navigate>
+                            {{ __('Solicitudes por mes') }}
+                        </flux:sidebar.item>
+
+                        <flux:sidebar.item icon="document-duplicate" :href="route('admin.reportes.paginas-por-solicitud')" :current="request()->routeIs('admin.reportes.paginas-por-solicitud')" wire:navigate>
+                            {{ __('Páginas por solicitud') }}
+                        </flux:sidebar.item>
+                    </flux:sidebar.group>
+                @endif
             </flux:sidebar.nav>
 
             <flux:spacer />
