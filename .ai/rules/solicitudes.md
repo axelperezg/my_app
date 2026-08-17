@@ -12,3 +12,6 @@ Tabla `solicitudes` (no `solicituds` — Eloquent adivina mal el plural en espa�
 `TipoArchivoSolicitud::MuestraMateriales` ya no existe: se dividió en `Video`, `Audio` e `Imagenes` (cada uno acepta varios archivos, opcionales — sin mínimo requerido — en `App\Livewire\Solicitudes\Create`).
 
 `solicitud_archivos.estatus` (enum `App\Enums\EstatusArchivoSolicitud`: Vacio/Incompleto/Completo, default Vacio) lo califica el Responsable por documento en `/responsable/solicitudes/{id}`. Sigue el mismo patrón que `Solicitud`/`Respuesta` ([[livewire-admin]]): `estatus` está fuera del `#[Fillable]` de `SolicitudArchivo` a propósito, se asigna por propiedad + `->save()` (ver `App\Livewire\Responsable\Solicitudes\Show::updatedArchivoEstatus()`), gateado por la policy `responder` (solo mientras la solicitud está `Asignada`).
+
+## Folio de Solicitud: consecutivo de 3 dígitos, no 6
+`CreateSolicitud::generateFolio()` genera `{anio}-{consecutivo3}` (ej. `2026-001`), no 6 dígitos — ver [[solicitudes]]. `SolicitudFactory` usa el mismo patrón (`now()->year.'-###'`). Si el consecutivo supera 999 en un año, `sprintf('%03d', ...)` simplemente amplía el ancho (ej. `2026-1000`), no trunca ni falla.

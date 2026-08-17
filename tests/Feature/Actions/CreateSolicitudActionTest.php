@@ -46,7 +46,7 @@ test('it creates a solicitud with a sequential folio, stores its files, and emai
         archivos: solicitudArchivos(),
     );
 
-    expect($solicitud->folio)->toBe('2026-000001')
+    expect($solicitud->folio)->toBe('2026-001')
         ->and($solicitud->solicitante_id)->toBe($solicitante->id)
         ->and($solicitud->archivos)->toHaveCount(7);
 
@@ -81,9 +81,9 @@ test('folios are sequential per ejercicio fiscal and reset for a different one',
     $segunda = $crear($ejercicioFiscal2026);
     $tercera = $crear($ejercicioFiscal2027);
 
-    expect($primera->folio)->toBe('2026-000001')
-        ->and($segunda->folio)->toBe('2026-000002')
-        ->and($tercera->folio)->toBe('2027-000001');
+    expect($primera->folio)->toBe('2026-001')
+        ->and($segunda->folio)->toBe('2026-002')
+        ->and($tercera->folio)->toBe('2027-001');
 });
 
 test('it counts the pages of each pdf requisito and leaves non-pdf archivos without a page count', function () {

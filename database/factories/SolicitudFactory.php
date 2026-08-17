@@ -21,7 +21,7 @@ class SolicitudFactory extends Factory
     public function definition(): array
     {
         return [
-            'folio' => fake()->unique()->numerify(now()->year.'-######'),
+            'folio' => fake()->unique()->numerify(now()->year.'-###'),
             'solicitante_id' => User::factory()->solicitante(),
             'institucion_id' => Institucion::factory(),
             'ejercicio_fiscal_id' => EjercicioFiscal::factory(),

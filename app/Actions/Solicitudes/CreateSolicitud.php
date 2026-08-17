@@ -61,7 +61,7 @@ class CreateSolicitud
             ->where('ejercicio_fiscal_id', $ejercicioFiscal->id)
             ->count() + 1;
 
-        return sprintf('%d-%06d', $ejercicioFiscal->anio, $consecutivo);
+        return sprintf('%d-%03d', $ejercicioFiscal->anio, $consecutivo);
     }
 
     /**
