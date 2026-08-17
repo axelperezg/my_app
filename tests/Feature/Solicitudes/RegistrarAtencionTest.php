@@ -40,9 +40,9 @@ test('a solicitante can register how they will attend every recomendación', fun
     expect($solicitud->estatus)->toBe(SolicitudEstatus::EnAtencion)
         ->and($respuesta->atencion)->not->toBeNull();
 
-    expect($recomendacion1->fresh()->estatus)->toBe(RecomendacionEstatus::Propuesta)
+    expect($recomendacion1->fresh()->estatus)->toBe(RecomendacionEstatus::Pendiente)
         ->and($recomendacion1->fresh()->atencion_descripcion)->toBe('Corregiremos el formato en 5 días hábiles.')
-        ->and($recomendacion2->fresh()->estatus)->toBe(RecomendacionEstatus::Propuesta);
+        ->and($recomendacion2->fresh()->estatus)->toBe(RecomendacionEstatus::Pendiente);
 
     Storage::disk('local')->assertExists($respuesta->atencion->ruta);
 
@@ -67,7 +67,7 @@ test('atención requires the pdf and a description for every pending recomendaci
         ]);
 });
 
-test('an already accepted recomendación cannot be edited again', function () {
+test('an already atendida recomendación cannot be edited again', function () {
     Storage::fake('local');
     Mail::fake();
 
@@ -77,10 +77,10 @@ test('an already accepted recomendación cannot be edited again', function () {
         'estatus' => SolicitudEstatus::EnAtencion,
     ]);
     $respuesta = Respuesta::factory()->for($solicitud)->create();
-    $aceptada = Recomendacion::factory()->for($respuesta)->aceptada()->create(['numero' => 1]);
+    $atendida = Recomendacion::factory()->for($respuesta)->atendida()->create(['numero' => 1]);
     $pendiente = Recomendacion::factory()->for($respuesta)->create(['numero' => 2]);
 
-    $descripcionOriginal = $aceptada->atencion_descripcion;
+    $descripcionOriginal = $atendida->atencion_descripcion;
 
     Livewire::actingAs($solicitante)
         ->test(Show::class, ['solicitud' => $solicitud])
@@ -89,8 +89,8 @@ test('an already accepted recomendación cannot be edited again', function () {
         ->call('submit')
         ->assertHasNoErrors();
 
-    expect($aceptada->fresh())
-        ->estatus->toBe(RecomendacionEstatus::Aceptada)
+    expect($atendida->fresh())
+        ->estatus->toBe(RecomendacionEstatus::Atendida)
         ->atencion_descripcion->toBe($descripcionOriginal);
 });
 

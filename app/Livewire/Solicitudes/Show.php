@@ -62,7 +62,7 @@ class Show extends Component
         }
 
         return $this->solicitud->respuesta->recomendaciones
-            ->reject(fn (Recomendacion $recomendacion) => $recomendacion->estatus === RecomendacionEstatus::Aceptada)
+            ->reject(fn (Recomendacion $recomendacion) => $recomendacion->estatus === RecomendacionEstatus::Atendida)
             ->all();
     }
 

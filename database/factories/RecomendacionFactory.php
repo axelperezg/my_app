@@ -28,36 +28,36 @@ class RecomendacionFactory extends Factory
     }
 
     /**
-     * Indicate the solicitante already proposed how they'll attend this recomendación.
+     * Indicate the solicitante already proposed how they'll attend this recomendación,
+     * still awaiting the responsable's evaluation.
      */
     public function propuesta(): static
     {
         return $this->state(fn (array $attributes) => [
-            'estatus' => RecomendacionEstatus::Propuesta,
+            'estatus' => RecomendacionEstatus::Pendiente,
             'atencion_descripcion' => fake()->paragraph(),
         ]);
     }
 
     /**
-     * Indicate the responsable accepted the atención.
+     * Indicate the responsable marked the atención as atendida (cumple).
      */
-    public function aceptada(): static
+    public function atendida(): static
     {
         return $this->state(fn (array $attributes) => [
-            'estatus' => RecomendacionEstatus::Aceptada,
+            'estatus' => RecomendacionEstatus::Atendida,
             'atencion_descripcion' => fake()->paragraph(),
         ]);
     }
 
     /**
-     * Indicate the responsable requested an adjustment.
+     * Indicate the responsable marked the atención as no atendida (no cumple).
      */
-    public function ajusteSolicitado(): static
+    public function noAtendida(): static
     {
         return $this->state(fn (array $attributes) => [
-            'estatus' => RecomendacionEstatus::AjusteSolicitado,
+            'estatus' => RecomendacionEstatus::NoAtendida,
             'atencion_descripcion' => fake()->paragraph(),
-            'comentario_responsable' => fake()->sentence(),
         ]);
     }
 }

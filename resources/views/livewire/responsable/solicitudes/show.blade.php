@@ -56,9 +56,8 @@
                     <div class="flex items-start justify-between gap-4">
                         <span>{{ $recomendacion->descripcion }}</span>
                         <flux:badge size="sm" :color="match ($recomendacion->estatus) {
-                            \App\Enums\RecomendacionEstatus::Aceptada => 'green',
-                            \App\Enums\RecomendacionEstatus::AjusteSolicitado => 'amber',
-                            \App\Enums\RecomendacionEstatus::Propuesta => 'blue',
+                            \App\Enums\RecomendacionEstatus::Atendida => 'green',
+                            \App\Enums\RecomendacionEstatus::NoAtendida => 'red',
                             default => 'zinc',
                         }">{{ $recomendacion->estatus->label() }}</flux:badge>
                     </div>
@@ -67,25 +66,16 @@
                         <flux:text class="mt-2 italic">{{ $recomendacion->atencion_descripcion }}</flux:text>
                     @endif
 
-                    @if ($recomendacion->comentario_responsable)
-                        <flux:text class="mt-1 text-amber-700 dark:text-amber-400">
-                            {{ __('Ajuste solicitado') }}: {{ $recomendacion->comentario_responsable }}
-                        </flux:text>
-                    @endif
-
-                    @if ($recomendacion->estatus === \App\Enums\RecomendacionEstatus::Propuesta && auth()->user()->can('revisarRecomendaciones', $solicitud))
+                    @if ($recomendacion->estatus === \App\Enums\RecomendacionEstatus::Pendiente && $recomendacion->atencion_descripcion && auth()->user()->can('revisarRecomendaciones', $solicitud))
                         <div class="mt-2 flex flex-wrap items-center gap-2">
-                            <flux:button size="sm" variant="primary" wire:click="aceptar({{ $recomendacion->id }})">
-                                {{ __('Aceptar') }}
+                            <flux:button size="sm" variant="primary" wire:click="marcarAtendida({{ $recomendacion->id }})">
+                                {{ __('Cumple') }}
                             </flux:button>
 
-                            <flux:input size="sm" wire:model="comentarios.{{ $recomendacion->id }}" :placeholder="__('Motivo del ajuste')" class="max-w-xs" />
-
-                            <flux:button size="sm" variant="ghost" wire:click="pedirAjuste({{ $recomendacion->id }})">
-                                {{ __('Solicitar ajuste') }}
+                            <flux:button size="sm" variant="danger" wire:click="marcarNoAtendida({{ $recomendacion->id }})">
+                                {{ __('No cumple') }}
                             </flux:button>
                         </div>
-                        <flux:error name="comentarios.{{ $recomendacion->id }}" />
                     @endif
                 </li>
             @endforeach

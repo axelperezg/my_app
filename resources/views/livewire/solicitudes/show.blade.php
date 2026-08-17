@@ -48,20 +48,13 @@
                         <div class="flex items-start justify-between gap-4">
                             <span>{{ $recomendacion->descripcion }}</span>
                             <flux:badge size="sm" :color="match ($recomendacion->estatus) {
-                                \App\Enums\RecomendacionEstatus::Aceptada => 'green',
-                                \App\Enums\RecomendacionEstatus::AjusteSolicitado => 'amber',
-                                \App\Enums\RecomendacionEstatus::Propuesta => 'blue',
+                                \App\Enums\RecomendacionEstatus::Atendida => 'green',
+                                \App\Enums\RecomendacionEstatus::NoAtendida => 'red',
                                 default => 'zinc',
                             }">{{ $recomendacion->estatus->label() }}</flux:badge>
                         </div>
 
-                        @if ($recomendacion->comentario_responsable)
-                            <flux:text class="mt-1 text-amber-700 dark:text-amber-400">
-                                {{ __('Ajuste solicitado') }}: {{ $recomendacion->comentario_responsable }}
-                            </flux:text>
-                        @endif
-
-                        @if ($recomendacion->estatus === \App\Enums\RecomendacionEstatus::Aceptada)
+                        @if ($recomendacion->estatus === \App\Enums\RecomendacionEstatus::Atendida)
                             <flux:text class="mt-2 italic">{{ $recomendacion->atencion_descripcion }}</flux:text>
                         @elseif (auth()->user()->can('registrarAtencion', $solicitud))
                             <flux:field class="mt-2">

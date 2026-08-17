@@ -5,9 +5,8 @@ namespace App\Enums;
 enum RecomendacionEstatus: string
 {
     case Pendiente = 'pendiente';
-    case Propuesta = 'propuesta';
-    case Aceptada = 'aceptada';
-    case AjusteSolicitado = 'ajuste_solicitado';
+    case Atendida = 'atendida';
+    case NoAtendida = 'no_atendida';
 
     /**
      * Get the human-readable label for the estatus.
@@ -16,9 +15,8 @@ enum RecomendacionEstatus: string
     {
         return match ($this) {
             self::Pendiente => __('Pendiente'),
-            self::Propuesta => __('En revisión'),
-            self::Aceptada => __('Aceptada'),
-            self::AjusteSolicitado => __('Ajuste solicitado'),
+            self::Atendida => __('Atendida'),
+            self::NoAtendida => __('No atendida'),
         };
     }
 }

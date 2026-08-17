@@ -16,7 +16,7 @@ use RuntimeException;
 class RegistrarAtencion
 {
     /**
-     * Register how the solicitante will attend each (not-yet-accepted) recomendación,
+     * Register how the solicitante will attend each not-yet-atendida recomendación,
      * attach the signed PDF, and notify the responsable.
      *
      * @param  array<int, string>  $descripciones  Keyed by recomendación id
@@ -40,7 +40,7 @@ class RegistrarAtencion
             $atencion->save();
 
             foreach ($respuesta->recomendaciones as $recomendacion) {
-                if ($recomendacion->estatus === RecomendacionEstatus::Aceptada) {
+                if ($recomendacion->estatus === RecomendacionEstatus::Atendida) {
                     continue;
                 }
 
@@ -49,7 +49,7 @@ class RegistrarAtencion
                 }
 
                 $recomendacion->atencion_descripcion = $descripciones[$recomendacion->id];
-                $recomendacion->estatus = RecomendacionEstatus::Propuesta;
+                $recomendacion->estatus = RecomendacionEstatus::Pendiente;
                 $recomendacion->save();
             }
 

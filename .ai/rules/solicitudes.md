@@ -15,3 +15,6 @@ Tabla `solicitudes` (no `solicituds` — Eloquent adivina mal el plural en espa�
 
 ## Folio de Solicitud: consecutivo de 3 dígitos, no 6
 `CreateSolicitud::generateFolio()` genera `{anio}-{consecutivo3}` (ej. `2026-001`), no 6 dígitos — ver [[solicitudes]]. `SolicitudFactory` usa el mismo patrón (`now()->year.'-###'`). Si el consecutivo supera 999 en un año, `sprintf('%03d', ...)` simplemente amplía el ancho (ej. `2026-1000`), no trunca ni falla.
+
+## RecomendacionEstatus: 3 estados, sin retroalimentación del Responsable
+`RecomendacionEstatus` tiene solo 3 cases: `Pendiente` (default, aún sin evaluar), `Atendida` (el Responsable marcó "Cumple"), `NoAtendida` (marcó "No cumple"). Ya no existen `Propuesta`/`Aceptada`/`AjusteSolicitado` ni la columna `comentario_responsable` — el Responsable ya no deja retroalimentación de texto, solo evalúa binario. `RegistrarAtencion` deja cualquier recomendación no-Atendida en `Pendiente` (con `atencion_descripcion` llena) al recibir la propuesta del Solicitante; la vista del Responsable (`App\Livewire\Responsable\Solicitudes\Show::marcarAtendida()`/`marcarNoAtendida()`) solo muestra los botones "Cumple"/"No cumple" cuando `estatus === Pendiente && atencion_descripcion` está llena (i.e. el Solicitante ya respondió). Ver [[solicitudes]].

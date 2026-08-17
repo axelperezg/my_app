@@ -32,9 +32,6 @@ class Show extends Component
     /** @var array<int, string> */
     public array $recomendaciones = [''];
 
-    /** @var array<int, string> */
-    public array $comentarios = [];
-
     /** @var array<int, string> Keyed by archivo id; '' means EstatusArchivoSolicitud::Vacio. */
     public array $archivoEstatus = [];
 
@@ -156,65 +153,53 @@ class Show extends Component
     }
 
     /**
-     * Accept the solicitante's proposed atención for a recomendación.
+     * Mark the solicitante's proposed atención as cumpliendo la recomendación.
      */
-    public function aceptar(Recomendacion $recomendacion): void
+    public function marcarAtendida(Recomendacion $recomendacion): void
     {
         Gate::authorize('revisarRecomendaciones', $this->solicitud);
 
         abort_unless($recomendacion->respuesta_id === $this->solicitud->respuesta->id, 404);
 
-        $recomendacion->estatus = RecomendacionEstatus::Aceptada;
-        $recomendacion->comentario_responsable = null;
+        $recomendacion->estatus = RecomendacionEstatus::Atendida;
         $recomendacion->save();
 
-        $this->cerrarSiTodoAceptado();
+        $this->cerrarSiTodoAtendido();
 
-        Flux::toast(variant: 'success', text: __('Recomendación aceptada.'));
+        Flux::toast(variant: 'success', text: __('Recomendación marcada como atendida.'));
 
         $this->refreshSolicitud($this->solicitud);
     }
 
     /**
-     * Request an adjustment from the solicitante for a recomendación.
+     * Mark the solicitante's proposed atención as not meeting the recomendación.
      */
-    public function pedirAjuste(Recomendacion $recomendacion): void
+    public function marcarNoAtendida(Recomendacion $recomendacion): void
     {
         Gate::authorize('revisarRecomendaciones', $this->solicitud);
 
         abort_unless($recomendacion->respuesta_id === $this->solicitud->respuesta->id, 404);
 
-        $comentario = trim($this->comentarios[$recomendacion->id] ?? '');
-
-        if ($comentario === '') {
-            $this->addError('comentarios.'.$recomendacion->id, __('Escribe qué debe ajustar el solicitante.'));
-
-            return;
-        }
-
-        $recomendacion->estatus = RecomendacionEstatus::AjusteSolicitado;
-        $recomendacion->comentario_responsable = $comentario;
+        $recomendacion->estatus = RecomendacionEstatus::NoAtendida;
         $recomendacion->save();
 
-        unset($this->comentarios[$recomendacion->id]);
-
-        Flux::toast(text: __('Se solicitó un ajuste al solicitante.'));
+        Flux::toast(text: __('Se marcó la recomendación como no atendida.'));
 
         $this->refreshSolicitud($this->solicitud);
     }
 
     /**
-     * Close the solicitud once every recomendación has been accepted.
+     * Close the solicitud once every recomendación has been marked atendida.
      */
-    private function cerrarSiTodoAceptado(): void
+    private function cerrarSiTodoAtendido(): void
     {
         $solicitud = $this->solicitud;
 
-        $todasAceptadas = $solicitud->respuesta->recomendaciones()
+        $todasAtendidas = $solicitud->respuesta->recomendaciones()
             ->get()
-            ->every(fn (Recomendacion $recomendacion) => $recomendacion->estatus === RecomendacionEstatus::Aceptada);
+            ->every(fn (Recomendacion $recomendacion) => $recomendacion->estatus === RecomendacionEstatus::Atendida);
 
-        if (! $todasAceptadas) {
+        if (! $todasAtendidas) {
             return;
         }
 

@@ -18,7 +18,6 @@ use Illuminate\Support\Carbon;
  * @property string $descripcion
  * @property RecomendacionEstatus $estatus
  * @property string|null $atencion_descripcion
- * @property string|null $comentario_responsable
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
