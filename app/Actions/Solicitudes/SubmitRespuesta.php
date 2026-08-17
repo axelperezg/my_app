@@ -23,14 +23,14 @@ class SubmitRespuesta
     public function handle(Solicitud $solicitud, User $responsable, UploadedFile $pdf, array $recomendaciones): Respuesta
     {
         $respuesta = DB::transaction(function () use ($solicitud, $responsable, $pdf, $recomendaciones) {
-            $ruta = $pdf->store("solicitudes/{$solicitud->folio}/respuesta", 'local');
+            $ruta = $pdf->store("solicitudes/{$solicitud->folio}/respuesta", 's3');
 
             if ($ruta === false) {
                 throw new RuntimeException('No se pudo guardar el documento de respuesta.');
             }
 
             $respuesta = $solicitud->respuesta()->make([
-                'disco' => 'local',
+                'disco' => 's3',
                 'ruta' => $ruta,
                 'nombre_original' => $pdf->getClientOriginalName(),
                 'fecha_respuesta' => CarbonImmutable::now(),

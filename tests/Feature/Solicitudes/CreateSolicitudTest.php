@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 
 test('solicitantes can submit a solicitud with all required files, using their account institución', function () {
-    Storage::fake('local');
+    Storage::fake('s3');
     Mail::fake();
 
     $solicitante = User::factory()->solicitante()->create();
@@ -59,7 +59,7 @@ test('the ejercicio fiscal is left blank when the current year has no active eje
 });
 
 test('solicitantes can attach more than one video, audio and imagen using the repeater', function () {
-    Storage::fake('local');
+    Storage::fake('s3');
     Mail::fake();
 
     $solicitante = User::factory()->solicitante()->create();
@@ -122,7 +122,7 @@ test('a solicitud requires every document', function () {
 });
 
 test('videos, audios and imágenes are optional', function () {
-    Storage::fake('local');
+    Storage::fake('s3');
     Mail::fake();
 
     $solicitante = User::factory()->solicitante()->create();

@@ -29,7 +29,7 @@ function solicitudArchivos(): array
 }
 
 test('it creates a solicitud with a sequential folio, stores its files, and emails the acuse', function () {
-    Storage::fake('local');
+    Storage::fake('s3');
     Mail::fake();
 
     $solicitante = User::factory()->solicitante()->create();
@@ -52,14 +52,14 @@ test('it creates a solicitud with a sequential folio, stores its files, and emai
 
     $this->assertModelExists($solicitud);
 
-    Storage::disk('local')->assertExists($solicitud->archivos->first()->ruta);
+    Storage::disk('s3')->assertExists($solicitud->archivos->first()->ruta);
 
     Mail::assertQueued(SolicitudRecibida::class, fn (SolicitudRecibida $mail) => $mail->solicitud->is($solicitud)
         && $mail->hasTo('solicitante@example.com'));
 });
 
 test('folios are sequential per ejercicio fiscal and reset for a different one', function () {
-    Storage::fake('local');
+    Storage::fake('s3');
     Mail::fake();
 
     $solicitante = User::factory()->solicitante()->create();
@@ -87,7 +87,7 @@ test('folios are sequential per ejercicio fiscal and reset for a different one',
 });
 
 test('it counts the pages of each pdf requisito and leaves non-pdf archivos without a page count', function () {
-    Storage::fake('local');
+    Storage::fake('s3');
     Mail::fake();
 
     $solicitante = User::factory()->solicitante()->create();

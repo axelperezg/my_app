@@ -21,3 +21,10 @@ Tabla `solicitudes` (no `solicituds` — Eloquent adivina mal el plural en espa�
 
 ## Calificar Documentos recibidos usa su propia policy, no "responder"
 El estatus de cada `SolicitudArchivo` (Vacío/Incompleto/Completo) lo gatea `SolicitudPolicy::calificarArchivos()`, no `responder()`. `responder()` solo es true mientras `estatus === Asignada` (antes de emitir la respuesta) — reusarla para calificar documentos dejaba el select deshabilitado en cuanto el Responsable emitía su respuesta, que era el bug real. `calificarArchivos()` es true mientras `responsable_id` coincide y la solicitud no está `Cerrada`, sin importar en qué otro estatus esté. Ver [[solicitudes]].
+
+## Archivos de Solicitudes se guardan en R2 (disco 's3'), no local
+`CreateSolicitud`, `SubmitRespuesta` y `RegistrarAtencion` guardan los archivos de una solicitud (`SolicitudArchivo`, `Respuesta`, `Atencion`) en el disco `s3` (Cloudflare R2, configurado en `config/filesystems.php` vía variables `AWS_*` — no `R2_*`, reutiliza el disco genérico `s3` de Laravel). El campo `disco` se guarda por registro (no asumir un valor fijo): solicitudes creadas antes de este cambio tienen `disco = 'local'`. Los controllers de descarga (`SolicitudArchivoController`, `SolicitudRespuestaController`, `SolicitudAtencionController`) ya son disco-agnósticos vía `Storage::disk($modelo->disco)`.
+
+`DeleteSolicitud::handle()` recolecta los discos realmente usados por los archivos de la solicitud (`archivos`, `respuesta`, `respuesta.atencion`) y borra el folder `solicitudes/{folio}` de cada uno — no asumir un solo disco fijo, porque una solicitud vieja puede tener archivos en `local` mientras el resto de la app ya usa `s3`.
+
+Importante: `LIVEWIRE_TEMPORARY_FILE_UPLOAD_DISK=local` está fijo en `.env` a propósito, independiente de `FILESYSTEM_DISK=s3` — si se quita, Livewire intenta subir los archivos temporales directo del navegador al bucket R2 vía URLs pre-firmadas, lo cual falla en silencio (el campo se ve lleno pero la validación sigue marcando "required") porque el bucket no tiene CORS configurado para eso.

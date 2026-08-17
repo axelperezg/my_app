@@ -73,18 +73,18 @@ class CreateSolicitud
             $tipo = TipoArchivoSolicitud::from($tipoValue);
 
             foreach (Arr::wrap($files) as $file) {
-                $ruta = $file->store("solicitudes/{$solicitud->folio}/{$tipo->value}", 'local');
+                $ruta = $file->store("solicitudes/{$solicitud->folio}/{$tipo->value}", 's3');
 
                 if ($ruta === false) {
                     throw new RuntimeException('No se pudo guardar uno de los documentos de la solicitud.');
                 }
 
-                $contenido = $tipo->cuentaParaReportePaginas() ? Storage::disk('local')->get($ruta) : null;
+                $contenido = $tipo->cuentaParaReportePaginas() ? Storage::disk('s3')->get($ruta) : null;
                 $paginas = $contenido !== null ? $this->countPdfPages->handle($contenido) : null;
 
                 $solicitud->archivos()->create([
                     'tipo' => $tipo,
-                    'disco' => 'local',
+                    'disco' => 's3',
                     'ruta' => $ruta,
                     'nombre_original' => $file->getClientOriginalName(),
                     'mime' => $file->getMimeType(),

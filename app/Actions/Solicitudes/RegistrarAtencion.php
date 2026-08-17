@@ -26,14 +26,14 @@ class RegistrarAtencion
         $respuesta = $solicitud->respuesta()->with(['recomendaciones', 'responsable'])->firstOrFail();
 
         $atencion = DB::transaction(function () use ($solicitud, $respuesta, $pdf, $descripciones) {
-            $ruta = $pdf->store("solicitudes/{$solicitud->folio}/atencion", 'local');
+            $ruta = $pdf->store("solicitudes/{$solicitud->folio}/atencion", 's3');
 
             if ($ruta === false) {
                 throw new RuntimeException('No se pudo guardar el documento de atención.');
             }
 
             $atencion = $respuesta->atencion()->firstOrNew();
-            $atencion->disco = 'local';
+            $atencion->disco = 's3';
             $atencion->ruta = $ruta;
             $atencion->nombre_original = $pdf->getClientOriginalName();
             $atencion->fecha_atencion = CarbonImmutable::now();
