@@ -17,7 +17,7 @@ test('a documento starts out as vacío', function () {
     ]);
     $archivo = SolicitudArchivo::factory()->for($solicitud)->create();
 
-    expect($archivo->estatus)->toBe(EstatusArchivoSolicitud::Vacio);
+    expect($archivo->estatus)->toBe(EstatusArchivoSolicitud::SinEvaluar);
 
     Livewire::actingAs($responsable)
         ->test(Show::class, ['solicitud' => $solicitud])
@@ -58,7 +58,7 @@ test('a responsable cannot change a documento estatus once the solicitud is cerr
     $responsable = User::factory()->responsable()->create();
     $solicitud = Solicitud::factory()->create([
         'responsable_id' => $responsable->id,
-        'estatus' => SolicitudEstatus::Cerrada,
+        'estatus' => SolicitudEstatus::Concluida,
     ]);
     $archivo = SolicitudArchivo::factory()->for($solicitud)->create();
 
@@ -67,7 +67,7 @@ test('a responsable cannot change a documento estatus once the solicitud is cerr
         ->set("archivoEstatus.{$archivo->id}", 'completo')
         ->assertForbidden();
 
-    expect($archivo->fresh()->estatus)->toBe(EstatusArchivoSolicitud::Vacio);
+    expect($archivo->fresh()->estatus)->toBe(EstatusArchivoSolicitud::SinEvaluar);
 });
 
 test('los documentos requeridos se muestran en un orden fijo y no se reacomodan al calificar uno', function () {

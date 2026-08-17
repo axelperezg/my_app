@@ -9,7 +9,7 @@ enum SolicitudEstatus: string
     case EnRevision = 'en_revision';
     case Respondida = 'respondida';
     case EnAtencion = 'en_atencion';
-    case Cerrada = 'cerrada';
+    case Concluida = 'concluida';
 
     /**
      * Get the human-readable label for the estatus.
@@ -22,7 +22,7 @@ enum SolicitudEstatus: string
             self::EnRevision => __('En revisión'),
             self::Respondida => __('Recomendaciones DGNC'),
             self::EnAtencion => __('Con atención a Recomendaciones'),
-            self::Cerrada => __('Cerrada'),
+            self::Concluida => __('Concluida'),
         };
     }
 }

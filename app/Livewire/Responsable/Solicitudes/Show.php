@@ -32,7 +32,7 @@ class Show extends Component
     /** @var array<int, string> */
     public array $recomendaciones = [''];
 
-    /** @var array<int, string> Keyed by archivo id; '' means EstatusArchivoSolicitud::Vacio. */
+    /** @var array<int, string> Keyed by archivo id; '' means EstatusArchivoSolicitud::SinEvaluar. */
     public array $archivoEstatus = [];
 
     /**
@@ -61,7 +61,7 @@ class Show extends Component
 
         $this->archivoEstatus = $this->solicitud->archivos
             ->mapWithKeys(fn ($archivo) => [
-                $archivo->id => $archivo->estatus === EstatusArchivoSolicitud::Vacio ? '' : $archivo->estatus->value,
+                $archivo->id => $archivo->estatus === EstatusArchivoSolicitud::SinEvaluar ? '' : $archivo->estatus->value,
             ])
             ->all();
     }
@@ -77,7 +77,7 @@ class Show extends Component
 
         abort_unless($archivo !== null, 404);
 
-        $archivo->estatus = filled($value) ? EstatusArchivoSolicitud::from($value) : EstatusArchivoSolicitud::Vacio;
+        $archivo->estatus = filled($value) ? EstatusArchivoSolicitud::from($value) : EstatusArchivoSolicitud::SinEvaluar;
         $archivo->save();
     }
 
@@ -203,7 +203,7 @@ class Show extends Component
             return;
         }
 
-        $solicitud->estatus = SolicitudEstatus::Cerrada;
+        $solicitud->estatus = SolicitudEstatus::Concluida;
         $solicitud->save();
 
         Mail::to($solicitud->correo_electronico)->queue(new SolicitudCerrada($solicitud));

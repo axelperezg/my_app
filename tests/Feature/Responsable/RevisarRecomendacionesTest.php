@@ -59,7 +59,7 @@ test('the solicitud closes and the solicitante is notified once every recomendac
         ->test(Show::class, ['solicitud' => $solicitud])
         ->call('marcarAtendida', $segunda);
 
-    expect($solicitud->fresh()->estatus)->toBe(SolicitudEstatus::Cerrada);
+    expect($solicitud->fresh()->estatus)->toBe(SolicitudEstatus::Concluida);
 
     Mail::assertQueued(SolicitudCerrada::class, fn (SolicitudCerrada $mail) => $mail->solicitud->is($solicitud));
 });

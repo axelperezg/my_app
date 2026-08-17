@@ -32,7 +32,7 @@ class SolicitudArchivo extends Model
     use HasFactory;
 
     protected $attributes = [
-        'estatus' => 'vacio',
+        'estatus' => 'sin_evaluar',
     ];
 
     /**

@@ -4,7 +4,7 @@ namespace App\Enums;
 
 enum EstatusArchivoSolicitud: string
 {
-    case Vacio = 'vacio';
+    case SinEvaluar = 'sin_evaluar';
     case Incompleto = 'incompleto';
     case Completo = 'completo';
 
@@ -14,7 +14,7 @@ enum EstatusArchivoSolicitud: string
     public function label(): string
     {
         return match ($this) {
-            self::Vacio => __('Sin Evaluar'),
+            self::SinEvaluar => __('Sin Evaluar'),
             self::Incompleto => __('Incompleto'),
             self::Completo => __('Completo'),
         };

@@ -51,7 +51,7 @@ class SolicitudPolicy
     public function calificarArchivos(User $user, Solicitud $solicitud): bool
     {
         return $solicitud->responsable_id === $user->id
-            && $solicitud->estatus !== SolicitudEstatus::Cerrada;
+            && $solicitud->estatus !== SolicitudEstatus::Concluida;
     }
 
     /**
