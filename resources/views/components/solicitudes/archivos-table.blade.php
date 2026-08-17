@@ -17,7 +17,7 @@
                 <flux:table.cell class="py-0">
                     <flux:select
                         wire:model.live="archivoEstatus.{{ $archivo->id }}"
-                        :placeholder="__('Vacío')"
+                        :placeholder="__('Sin Evaluar')"
                         size="sm"
                         class="max-w-[10rem]"
                         :disabled="! auth()->user()->can('calificarArchivos', $solicitud)"
