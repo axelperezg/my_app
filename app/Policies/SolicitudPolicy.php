@@ -44,6 +44,17 @@ class SolicitudPolicy
     }
 
     /**
+     * Determine whether the user can calificar (Incompleto/Completo) the documentos
+     * recibidos. Unlike responder(), this stays open for the whole life of the
+     * solicitud — not just while it's Asignada — until it's Cerrada.
+     */
+    public function calificarArchivos(User $user, Solicitud $solicitud): bool
+    {
+        return $solicitud->responsable_id === $user->id
+            && $solicitud->estatus !== SolicitudEstatus::Cerrada;
+    }
+
+    /**
      * Determine whether the user can register how they'll attend the recomendaciones.
      */
     public function registrarAtencion(User $user, Solicitud $solicitud): bool

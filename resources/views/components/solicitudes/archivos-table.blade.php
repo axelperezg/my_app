@@ -20,7 +20,7 @@
                         :placeholder="__('Vacío')"
                         size="sm"
                         class="max-w-[10rem]"
-                        :disabled="! auth()->user()->can('responder', $solicitud)"
+                        :disabled="! auth()->user()->can('calificarArchivos', $solicitud)"
                     >
                         <flux:select.option value="incompleto">{{ __('Incompleto') }}</flux:select.option>
                         <flux:select.option value="completo">{{ __('Completo') }}</flux:select.option>

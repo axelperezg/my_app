@@ -39,11 +39,26 @@ test('a responsable can mark a documento as completo or incompleto while the sol
     expect($archivo->fresh()->estatus)->toBe(EstatusArchivoSolicitud::Completo);
 });
 
-test('a responsable cannot change a documento estatus once the solicitud is no longer asignada', function () {
+test('a responsable can still calificar documentos after emitting the respuesta', function () {
     $responsable = User::factory()->responsable()->create();
     $solicitud = Solicitud::factory()->create([
         'responsable_id' => $responsable->id,
         'estatus' => SolicitudEstatus::Respondida,
+    ]);
+    $archivo = SolicitudArchivo::factory()->for($solicitud)->create();
+
+    Livewire::actingAs($responsable)
+        ->test(Show::class, ['solicitud' => $solicitud])
+        ->set("archivoEstatus.{$archivo->id}", 'completo');
+
+    expect($archivo->fresh()->estatus)->toBe(EstatusArchivoSolicitud::Completo);
+});
+
+test('a responsable cannot change a documento estatus once the solicitud is cerrada', function () {
+    $responsable = User::factory()->responsable()->create();
+    $solicitud = Solicitud::factory()->create([
+        'responsable_id' => $responsable->id,
+        'estatus' => SolicitudEstatus::Cerrada,
     ]);
     $archivo = SolicitudArchivo::factory()->for($solicitud)->create();
 

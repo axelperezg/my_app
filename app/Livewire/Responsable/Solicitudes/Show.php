@@ -71,7 +71,7 @@ class Show extends Component
      */
     public function updatedArchivoEstatus(string $value, string $archivoId): void
     {
-        Gate::authorize('responder', $this->solicitud);
+        Gate::authorize('calificarArchivos', $this->solicitud);
 
         $archivo = $this->solicitud->archivos->firstWhere('id', (int) $archivoId);
 
