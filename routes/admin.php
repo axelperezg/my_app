@@ -5,6 +5,7 @@ use App\Livewire\Admin\Instituciones;
 use App\Livewire\Admin\Logos;
 use App\Livewire\Admin\Reportes\PaginasPorSolicitud;
 use App\Livewire\Admin\Reportes\SolicitudesPorMes;
+use App\Livewire\Admin\SolicitudDetalle;
 use App\Livewire\Admin\Solicitudes;
 use App\Livewire\Admin\Users;
 use Illuminate\Support\Facades\Route;
@@ -19,6 +20,8 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
     Route::livewire('ejercicios-fiscales', EjerciciosFiscales::class)->name('ejercicios-fiscales');
 
     Route::livewire('solicitudes', Solicitudes::class)->name('solicitudes');
+
+    Route::livewire('solicitudes/{solicitud}', SolicitudDetalle::class)->name('solicitudes.show');
 
     Route::livewire('reportes/solicitudes-por-mes', SolicitudesPorMes::class)->name('reportes.solicitudes-por-mes');
 

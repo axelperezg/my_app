@@ -9,6 +9,7 @@
             <flux:table.column>{{ __('Institución') }}</flux:table.column>
             <flux:table.column>{{ __('Estatus') }}</flux:table.column>
             <flux:table.column>{{ __('Responsable') }}</flux:table.column>
+            <flux:table.column></flux:table.column>
         </flux:table.columns>
 
         <flux:table.rows>
@@ -33,10 +34,47 @@
                             @endforeach
                         </select>
                     </flux:table.cell>
+                    <flux:table.cell class="py-0">
+                        <div class="flex justify-end gap-2">
+                            <flux:button variant="ghost" size="sm" icon="eye" :href="route('admin.solicitudes.show', $solicitud)">
+                                {{ __('Ver') }}
+                            </flux:button>
+
+                            <flux:modal.trigger name="eliminar-solicitud-{{ $solicitud->id }}">
+                                <flux:button variant="danger" size="sm" icon="trash">
+                                    {{ __('Eliminar') }}
+                                </flux:button>
+                            </flux:modal.trigger>
+
+                            <flux:modal name="eliminar-solicitud-{{ $solicitud->id }}" class="max-w-lg">
+                                <div class="space-y-6">
+                                    <div>
+                                        <flux:heading size="lg">
+                                            {{ __('¿Eliminar la solicitud :folio?', ['folio' => $solicitud->folio]) }}
+                                        </flux:heading>
+
+                                        <flux:subheading>
+                                            {{ __('Se eliminarán permanentemente sus documentos, respuesta y recomendaciones. Esta acción no se puede deshacer.') }}
+                                        </flux:subheading>
+                                    </div>
+
+                                    <div class="flex justify-end gap-2">
+                                        <flux:modal.close>
+                                            <flux:button variant="filled">{{ __('Cancelar') }}</flux:button>
+                                        </flux:modal.close>
+
+                                        <flux:button variant="danger" wire:click="eliminar({{ $solicitud->id }})">
+                                            {{ __('Eliminar') }}
+                                        </flux:button>
+                                    </div>
+                                </div>
+                            </flux:modal>
+                        </div>
+                    </flux:table.cell>
                 </flux:table.row>
             @empty
                 <flux:table.row>
-                    <flux:table.cell colspan="5">{{ __('Aún no se ha recibido ninguna solicitud.') }}</flux:table.cell>
+                    <flux:table.cell colspan="6">{{ __('Aún no se ha recibido ninguna solicitud.') }}</flux:table.cell>
                 </flux:table.row>
             @endforelse
         </flux:table.rows>

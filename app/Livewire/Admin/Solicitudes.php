@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Admin;
 
+use App\Actions\Solicitudes\DeleteSolicitud;
 use App\Enums\SolicitudEstatus;
 use App\Enums\UserRole;
 use App\Models\Solicitud;
@@ -45,6 +46,22 @@ class Solicitudes extends Component
         $solicitud->save();
 
         Flux::toast(variant: 'success', text: __('Solicitud asignada.'));
+
+        unset($this->solicitudes);
+    }
+
+    /**
+     * Permanently delete a solicitud: its files and every related record.
+     */
+    public function eliminar(Solicitud $solicitud, DeleteSolicitud $deleteSolicitud): void
+    {
+        $folio = $solicitud->folio;
+        $modalName = "eliminar-solicitud-{$solicitud->id}";
+
+        $deleteSolicitud->handle($solicitud);
+
+        Flux::modal($modalName)->close();
+        Flux::toast(variant: 'success', text: __('Solicitud :folio eliminada.', ['folio' => $folio]));
 
         unset($this->solicitudes);
     }
