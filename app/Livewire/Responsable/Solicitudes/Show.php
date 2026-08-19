@@ -135,7 +135,7 @@ class Show extends Component
         Gate::authorize('responder', $this->solicitud);
 
         $validated = $this->validate([
-            'pdfRespuesta' => ['required', 'file', 'mimes:pdf', 'max:20480'],
+            'pdfRespuesta' => ['nullable', 'file', 'mimes:pdf', 'max:20480'],
             'recomendaciones' => ['required', 'array', 'min:1'],
             'recomendaciones.*' => ['required', 'string', 'max:2000'],
         ]);

@@ -76,7 +76,7 @@ class Show extends Component
         $editables = $this->recomendacionesEditables();
 
         $rules = [
-            'pdfAtencion' => ['required', 'file', 'mimes:pdf', 'max:20480'],
+            'pdfAtencion' => ['nullable', 'file', 'mimes:pdf', 'max:20480'],
         ];
 
         foreach ($editables as $recomendacion) {

@@ -17,24 +17,36 @@ class SubmitRespuesta
 {
     /**
      * Issue the respuesta for a solicitud with its recomendaciones, and notify the solicitante.
+     * The signed PDF is optional — the respuesta can be issued without one.
      *
      * @param  array<int, string>  $recomendaciones  Ordered list of recomendación descriptions
      */
-    public function handle(Solicitud $solicitud, User $responsable, UploadedFile $pdf, array $recomendaciones): Respuesta
+    public function handle(Solicitud $solicitud, User $responsable, ?UploadedFile $pdf, array $recomendaciones): Respuesta
     {
         $respuesta = DB::transaction(function () use ($solicitud, $responsable, $pdf, $recomendaciones) {
-            $ruta = $pdf->store("solicitudes/{$solicitud->folio}/respuesta", 's3');
+            $datos = [
+                'disco' => null,
+                'ruta' => null,
+                'nombre_original' => null,
+                'fecha_respuesta' => CarbonImmutable::now(),
+            ];
 
-            if ($ruta === false) {
-                throw new RuntimeException('No se pudo guardar el documento de respuesta.');
+            if ($pdf !== null) {
+                $ruta = $pdf->store("solicitudes/{$solicitud->folio}/respuesta", 's3');
+
+                if ($ruta === false) {
+                    throw new RuntimeException('No se pudo guardar el documento de respuesta.');
+                }
+
+                $datos = [
+                    'disco' => 's3',
+                    'ruta' => $ruta,
+                    'nombre_original' => $pdf->getClientOriginalName(),
+                    'fecha_respuesta' => CarbonImmutable::now(),
+                ];
             }
 
-            $respuesta = $solicitud->respuesta()->make([
-                'disco' => 's3',
-                'ruta' => $ruta,
-                'nombre_original' => $pdf->getClientOriginalName(),
-                'fecha_respuesta' => CarbonImmutable::now(),
-            ]);
+            $respuesta = $solicitud->respuesta()->make($datos);
             $respuesta->responsable_id = $responsable->id;
             $respuesta->save();
 
