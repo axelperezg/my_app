@@ -14,9 +14,9 @@ use Illuminate\Support\Carbon;
 /**
  * @property int $id
  * @property int $respuesta_id
- * @property string $disco
- * @property string $ruta
- * @property string $nombre_original
+ * @property string|null $disco
+ * @property string|null $ruta
+ * @property string|null $nombre_original
  * @property CarbonImmutable $fecha_atencion
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at

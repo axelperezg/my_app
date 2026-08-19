@@ -15,7 +15,11 @@
         <flux:table.rows>
             @forelse ($this->solicitudes as $solicitud)
                 <flux:table.row :key="$solicitud->id">
-                    <flux:table.cell variant="strong">{{ $solicitud->folio }}</flux:table.cell>
+                    <flux:table.cell class="py-0">
+                        <flux:link :href="route('admin.solicitudes.show', $solicitud)" wire:navigate>
+                            <flux:badge size="sm" color="emerald">{{ $solicitud->folio }}</flux:badge>
+                        </flux:link>
+                    </flux:table.cell>
                     <flux:table.cell>{{ $solicitud->solicitante->name }}</flux:table.cell>
                     <flux:table.cell>{{ $solicitud->institucion->nombre }}</flux:table.cell>
                     <flux:table.cell class="py-0">
@@ -36,10 +40,6 @@
                     </flux:table.cell>
                     <flux:table.cell class="py-0">
                         <div class="flex justify-end gap-2">
-                            <flux:button variant="ghost" size="sm" icon="eye" :href="route('admin.solicitudes.show', $solicitud)">
-                                {{ __('Ver') }}
-                            </flux:button>
-
                             <flux:modal.trigger name="eliminar-solicitud-{{ $solicitud->id }}">
                                 <flux:button variant="danger" size="sm" icon="trash">
                                     {{ __('Eliminar') }}

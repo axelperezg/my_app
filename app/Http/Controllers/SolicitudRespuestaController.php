@@ -18,6 +18,8 @@ class SolicitudRespuestaController extends Controller
 
         $respuesta = $solicitud->respuesta()->firstOrFail();
 
+        abort_unless($respuesta->ruta !== null, 404);
+
         return Storage::disk($respuesta->disco)->download($respuesta->ruta, $respuesta->nombre_original);
     }
 }

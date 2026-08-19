@@ -17,25 +17,29 @@ class RegistrarAtencion
 {
     /**
      * Register how the solicitante will attend each not-yet-atendida recomendación,
-     * attach the signed PDF, and notify the responsable.
+     * optionally attach the signed PDF, and notify the responsable.
      *
      * @param  array<int, string>  $descripciones  Keyed by recomendación id
      */
-    public function handle(Solicitud $solicitud, UploadedFile $pdf, array $descripciones): Atencion
+    public function handle(Solicitud $solicitud, ?UploadedFile $pdf, array $descripciones): Atencion
     {
         $respuesta = $solicitud->respuesta()->with(['recomendaciones', 'responsable'])->firstOrFail();
 
         $atencion = DB::transaction(function () use ($solicitud, $respuesta, $pdf, $descripciones) {
-            $ruta = $pdf->store("solicitudes/{$solicitud->folio}/atencion", 's3');
+            $atencion = $respuesta->atencion()->firstOrNew();
 
-            if ($ruta === false) {
-                throw new RuntimeException('No se pudo guardar el documento de atención.');
+            if ($pdf !== null) {
+                $ruta = $pdf->store("solicitudes/{$solicitud->folio}/atencion", 's3');
+
+                if ($ruta === false) {
+                    throw new RuntimeException('No se pudo guardar el documento de atención.');
+                }
+
+                $atencion->disco = 's3';
+                $atencion->ruta = $ruta;
+                $atencion->nombre_original = $pdf->getClientOriginalName();
             }
 
-            $atencion = $respuesta->atencion()->firstOrNew();
-            $atencion->disco = 's3';
-            $atencion->ruta = $ruta;
-            $atencion->nombre_original = $pdf->getClientOriginalName();
             $atencion->fecha_atencion = CarbonImmutable::now();
             $atencion->save();
 

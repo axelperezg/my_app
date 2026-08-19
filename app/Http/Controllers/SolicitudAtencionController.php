@@ -18,6 +18,8 @@ class SolicitudAtencionController extends Controller
 
         $atencion = $solicitud->respuesta()->firstOrFail()->atencion()->firstOrFail();
 
+        abort_unless($atencion->ruta !== null, 404);
+
         return Storage::disk($atencion->disco)->download($atencion->ruta, $atencion->nombre_original);
     }
 }

@@ -49,7 +49,7 @@ test('a solicitante can register how they will attend every recomendación', fun
     Mail::assertQueued(AtencionRegistrada::class, fn (AtencionRegistrada $mail) => $mail->solicitud->is($solicitud));
 });
 
-test('atención requires the pdf and a description for every pending recomendación', function () {
+test('atención requires a description for every pending recomendación but not the pdf', function () {
     $solicitante = User::factory()->solicitante()->create();
     $solicitud = Solicitud::factory()->create([
         'solicitante_id' => $solicitante->id,
@@ -61,10 +61,32 @@ test('atención requires the pdf and a description for every pending recomendaci
     Livewire::actingAs($solicitante)
         ->test(Show::class, ['solicitud' => $solicitud])
         ->call('submit')
-        ->assertHasErrors([
-            'pdfAtencion' => 'required',
-            "descripciones.{$recomendacion->id}" => 'required',
-        ]);
+        ->assertHasErrors(["descripciones.{$recomendacion->id}" => 'required'])
+        ->assertHasNoErrors('pdfAtencion');
+});
+
+test('a solicitante can register atención without a pdf', function () {
+    Mail::fake();
+
+    $solicitante = User::factory()->solicitante()->create();
+    $solicitud = Solicitud::factory()->create([
+        'solicitante_id' => $solicitante->id,
+        'estatus' => SolicitudEstatus::Respondida,
+    ]);
+    $respuesta = Respuesta::factory()->for($solicitud)->create();
+    $recomendacion = Recomendacion::factory()->for($respuesta)->create();
+
+    Livewire::actingAs($solicitante)
+        ->test(Show::class, ['solicitud' => $solicitud])
+        ->set("descripciones.{$recomendacion->id}", 'Lo atenderemos la próxima semana.')
+        ->call('submit')
+        ->assertHasNoErrors()
+        ->assertRedirect(route('solicitudes.index'));
+
+    $solicitud->refresh();
+
+    expect($solicitud->estatus)->toBe(SolicitudEstatus::EnAtencion)
+        ->and($respuesta->atencion->ruta)->toBeNull();
 });
 
 test('an already atendida recomendación cannot be edited again', function () {

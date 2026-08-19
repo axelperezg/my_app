@@ -40,7 +40,7 @@ test('a responsable can submit a respuesta with recomendaciones for their assign
     Mail::assertQueued(RespuestaEmitida::class, fn (RespuestaEmitida $mail) => $mail->solicitud->is($solicitud));
 });
 
-test('a respuesta requires the pdf and at least one recomendación', function () {
+test('a respuesta requires at least one recomendación but not the pdf', function () {
     $responsable = User::factory()->responsable()->create();
     $solicitud = Solicitud::factory()->create([
         'responsable_id' => $responsable->id,
@@ -51,7 +51,30 @@ test('a respuesta requires the pdf and at least one recomendación', function ()
         ->test(Show::class, ['solicitud' => $solicitud])
         ->set('recomendaciones', [''])
         ->call('submit')
-        ->assertHasErrors(['pdfRespuesta' => 'required', 'recomendaciones.0' => 'required']);
+        ->assertHasErrors(['recomendaciones.0' => 'required'])
+        ->assertHasNoErrors('pdfRespuesta');
+});
+
+test('a responsable can submit a respuesta without a pdf', function () {
+    Mail::fake();
+
+    $responsable = User::factory()->responsable()->create();
+    $solicitud = Solicitud::factory()->create([
+        'responsable_id' => $responsable->id,
+        'estatus' => SolicitudEstatus::Asignada,
+    ]);
+
+    Livewire::actingAs($responsable)
+        ->test(Show::class, ['solicitud' => $solicitud])
+        ->set('recomendaciones', ['Corregir el formato X'])
+        ->call('submit')
+        ->assertHasNoErrors()
+        ->assertRedirect(route('responsable.solicitudes.index'));
+
+    $solicitud->refresh();
+
+    expect($solicitud->estatus)->toBe(SolicitudEstatus::Respondida)
+        ->and($solicitud->respuesta->ruta)->toBeNull();
 });
 
 test('a responsable cannot even open a solicitud assigned to someone else', function () {
